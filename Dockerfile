@@ -14,4 +14,6 @@ RUN \
 WORKDIR /data
 VOLUME ["/data"]
 
+COPY entrypoint.sh /entrypoint.sh
+
 ENTRYPOINT ["/entrypoint.sh"]
