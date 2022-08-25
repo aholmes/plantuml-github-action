@@ -1,14 +1,17 @@
-FROM ubuntu:groovy
-# Current plantUML version at time of switch: PlantUML Version 1.2020.02
-# Note: GitHub Actions must be run by the default Docker user (root). Ensure your Dockerfile does not set the USER instruction, otherwise you will not be able to access GITHUB_WORKSPACE.
 
-# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=863199
-RUN mkdir -p /usr/share/man/man1
 
-RUN apt-get -qy update && \
-    DEBIAN_FRONTEND=noninteractive apt-get -yq install plantuml graphviz git fonts-ipafont fonts-ipaexfont && \
-    rm -rf /var/lib/apt/lists/*
+FROM openjdk:17-alpine
 
-COPY entrypoint.sh /entrypoint.sh
+ARG PLANTUML_VERSION=v1.2022.6
+
+ENV LANG en_US.UTF-8
+
+RUN \
+  apk add --no-cache graphviz wget ca-certificates ttf-dejavu && \
+  wget "https://github.com/plantuml/plantuml/releases/download/${PLANTUML_VERSION}/plantuml-${PLANTUML_VERSION#?}.jar" -O /opt/plantuml.jar && \
+  apk del wget ca-certificates
+
+WORKDIR /data
+VOLUME ["/data"]
 
 ENTRYPOINT ["/entrypoint.sh"]
